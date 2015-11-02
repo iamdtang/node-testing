@@ -188,7 +188,7 @@ CartSummary.prototype.getTax = function(done) {
 
 ### Stubbing with Sinon
 
-Let's say we now want to break out our tax calculation into its own module so that it can be used in other parts of our system. We could simply move the code from `getTax()` into its own module `tax.calculate()` with its own test and call it from `CartSummary.prototype.getTax()`.
+Let's say we now want to break out our tax calculation into its own module so that it can be used in other parts of our system. We could simply move the code from `getTax()` into its own module `tax.calculate()` with its own test and call it from `getTax()`.
 
 ```js
 // src/tax.js
@@ -245,9 +245,13 @@ CartSummary.prototype.getTax = function(done) {
 };
 ```
 
-All tests should be passing. However, the test for `CartSummary.prototype.getTax()` knows about the implementation of `tax.calculate()` because it is using Nock to intercept the HTTP request made to the tax API service. If the implementation of `tax.calculate()` changed, such as a different tax API service was used, so would our test for `CartSummary.prototype.getTax()`. Instead, a better approach would be to fake out `tax.calculate()` when testing `CartSummary.prototype.getTax()` using a type of test double known as a stub provided by Sinon.
+All tests should be passing. However, the test for `getTax()` knows about the implementation of `tax.calculate()` because it is using Nock to intercept the HTTP request made to the tax API service. If the implementation of `tax.calculate()` changed, such as a different tax API service was used, so would our test for `getTax()`. Instead, a better approach would be to fake out `tax.calculate()` when testing `getTax()` using a type of test double known as a stub provided by Sinon.
 
-To install Sinon, run `npm install sinon --save-dev`.
+To install Sinon, run:
+
+```
+npm install sinon --save-dev
+```
 
 Let's revise `getTax()` test to use Sinon instead of Nock.
 
