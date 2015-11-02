@@ -253,7 +253,7 @@ To install Sinon, run:
 npm install sinon --save-dev
 ```
 
-Let's revise `getTax` test to use Sinon instead of Nock.
+Let's revise the `getTax` test to use Sinon instead of Nock.
 
 ```js
 // tests/cart-summary-2-test.js
