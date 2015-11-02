@@ -7,7 +7,7 @@ In this post we are going to look at unit testing in Node using the Mocha test f
 npm install mocha -g
 ```
 
-Unlike other JavaScript testing frameworks like Jasmine and QUnit, Mocha doesn't come with an assertion library. Instead, Mocha allows you to choose your own. Popular assertion libraries used with Mocha include should.js, expect.js, Chai, and Node's built in `assert` module. In this post, we're going to use Chai.
+Unlike other JavaScript testing frameworks like Jasmine and QUnit, Mocha does not come with an assertion library. Instead, Mocha allows you to choose your own. Popular assertion libraries used with Mocha include should.js, expect.js, Chai, and Node's built in `assert` module. In this post, we're going to use Chai.
 
 First, let's create a `package.json` file and install Chai:
 
@@ -17,7 +17,7 @@ echo {} > package.json
 npm install chai --save-dev
 ```
 
-Chai comes with 3 different assertion flavors. It has the `should` style, the `expect` style, and the `assert` style. They all get the job done and choosing one is just a matter of preference in how you want the language of your tests to read. Personally I like the `expect` style so we will be using that in this post.
+Chai comes with 3 different assertion flavors. It has the `should` style, the `expect` style, and the `assert` style. They all get the job done and choosing one is just a matter of preference in how you want the language of your tests to read. Personally I like the `expect` style so we will be using that.
 
 ### Your First Test
 
@@ -38,7 +38,7 @@ describe('CartSummary', function() {
 });
 ```
 
-The `describe` function is used to set up a group of tests. The first argument is a name for a group of tests. I tend to put the module under test as the name. A test is written using the `it` function. Each `it` block will contain one or more assertions or expectations using Chai in this example. Our first test simply verifies that the subtotal is 0 if items is an empty array.
+The `describe` function is used to set up a group of tests with a name. I tend to put the module under test as the name. A test is written using the `it` function. Each `it` block will contain one or more assertions or expectations using Chai in this example. Our first test simply verifies that the subtotal is 0 if items is an empty array.
 
 To run this test, run `mocha tests --watch` from the root of the project. You should see something like this:
 
@@ -63,7 +63,7 @@ Here I've written the minimal amount of code to make our test pass.
 ![passing test-1](passing-test-1.png)
 
 
-Let's move on to our next test:
+Let's move on to our next test.
 
 ```js
 it('getSubtotal() should return the sum of the price * quantity for all items', function() {
@@ -91,7 +91,7 @@ it('getSubtotal() should return the sum of the price * quantity for all items', 
 
 ![failing-test-2.png](failing-test-2.png)
 
-The failing output shows what value `getSubtotal()` returned in red and what value we expected in green. Let's revise `getSubtotal()`:
+The failing output shows what value `getSubtotal()` returned in red and what value we expected in green. Let's revise `getSubtotal()` so our test passes.
 
 ```js
 // src/cart-summary.js
@@ -109,11 +109,17 @@ CartSummary.prototype.getSubtotal = function() {
 
 ### Testing HTTP Requests
 
-So far writing tests hasn't been too difficult. At this point, you might be saying to yourself: "Most of my code makes database and web service calls. How do I test that?". Let me show you.
+So far writing tests has not been too difficult. At this point, you might be saying to yourself: "Most of my code makes database and web service calls. How do I test that?". Let me show you.
 
-Let's say we want our `CartSummary` class to have a method for getting the tax for the subtotal. To figure out the tax, we're going to hit a fictitious API that deals with tax calculation. This API expects a POST request to https://some-tax-service.com/request with a JSON payload containing the subtotal. Now remember, unit tests are supposed to be isolated from database and API calls to ensure predictability and repeatability. So how do we unit test a method that makes an API call? Let me introduce [Nock](https://github.com/pgte/nock), an HTTP mocking library for Node. This library overrides Node's `http.request` function so that requests are not actually made. Let's see how we can use this in our test.
+Let's say we want our `CartSummary` class to have a method for getting the tax from a subtotal. To calculate the tax, we are going to hit a fictitious API that deals with tax calculation. This API expects a POST request to https://some-tax-service.com/request with a JSON payload containing the subtotal. Now remember, unit tests are supposed to be isolated from database and API calls to ensure predictability and repeatability. So how do we unit test a method that makes an API call? Let me introduce [Nock](https://github.com/pgte/nock), an HTTP mocking library for Node. This library overrides Node's `http.request` function so that HTTP requests are not actually made. Let's see how we can use this in our test.
 
-First, install Nock: `npm install nock --save-dev`.
+First, install Nock:
+
+```
+npm install nock --save-dev
+```
+
+Now we are going to use Nock to intercept the HTTP call to the tax API in our test.
 
 ```js
 // tests/cart-summary-test.js
@@ -158,7 +164,7 @@ it('getTax() should execute the callback function with the tax amount', function
 
 In this test, when a POST request comes in to https://some-tax-service.com/request, Nock will respond with a JSON payload that contains the tax, which is 10% of the the subtotal passed in the request payload.
 
-This example also exhibits asynchronous testing. Specifying a parameter in the `it()` block (called `done()` in this example), Mocha will pass in a function and wait for this function to execute before ending the tests. The test will timeout and error if `done()` is not invoked within 2000 milliseconds.
+This example also exhibits asynchronous testing. Specifying a parameter in the `it` block (called `done` in this example), Mocha will pass in a function and wait for this function to execute before ending the tests. The test will timeout and error if `done` is not invoked within 2000 milliseconds.
 
 Let's write the implementation of `getTax()` to make this test pass.
 
