@@ -7,7 +7,7 @@ In this post we are going to look at unit testing in Node using the Mocha test f
 npm install mocha -g
 ```
 
-Unlike other JavaScript testing frameworks like Jasmine and QUnit, Mocha does not come with an assertion library. Instead, Mocha allows you to choose your own. Popular assertion libraries used with Mocha include should.js, expect.js, Chai, and Node's built in `assert` module. In this post, we're going to use Chai.
+Unlike other JavaScript testing frameworks like Jasmine and QUnit, Mocha does not come with an assertion library. Instead, Mocha allows you to choose your own. Popular assertion libraries used with Mocha include should.js, expect.js, Chai, and Node's built in `assert` module. In this post, we are going to use Chai.
 
 First, let's create a `package.json` file and install Chai:
 
