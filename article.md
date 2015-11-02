@@ -52,7 +52,7 @@ Our test is failing because we have not yet implemented `CartSummary`. Let's do 
 function CartSummary() {}
 
 CartSummary.prototype.getSubtotal = function() {
-	return 0;
+  return 0;
 };
 
 module.exports = CartSummary;
@@ -67,23 +67,19 @@ Let's move on to our next test.
 
 ```js
 it('getSubtotal() should return the sum of the price * quantity for all items', function() {
-  var cartSummary = new CartSummary([
-    {
-      id: 1,
-      quantity: 4,
-      price: 50
-    },
-    {
-      id: 2,
-      quantity: 2,
-      price: 30
-    },
-    {
-      id: 3,
-      quantity: 1,
-      price: 40
-    }
-  ]);
+  var cartSummary = new CartSummary([{
+    id: 1,
+    quantity: 4,
+    price: 50
+  }, {
+    id: 2,
+    quantity: 2,
+    price: 30
+  }, {
+    id: 3,
+    quantity: 1,
+    price: 40
+  }]);
 
   expect(cartSummary.getSubtotal()).to.equal(300);
 });
