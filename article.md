@@ -296,7 +296,7 @@ describe('getTax()', function() {
 
 A stub is a function with pre-programmed behavior that overrides another function. In this example, we are stubbing out `tax.calculate` with a function that simply executes the callback with a static tax. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is excuted which restores the original `tax.calculate`. By writing our test for the refactored `getTax` method using a stub instead of Nock, the test never has to change if the underlying implementation of `tax.calculate` changes. Note that the public interface of `tax.calculate` needs to be kept the same.
 
-Sinon is a very powerful library and offers a lot more than just stubbing including spies, mocks, fake servers, and plenty more.
+Sinon is a very powerful library and offers a lot more than just stubs including spies, mocks, fake servers, and plenty more.
 
 ### Conclusion
 
