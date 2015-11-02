@@ -176,17 +176,17 @@ Let's write the implementation of `getTax` to make this test pass.
 // src/cart-summary.js
 
 CartSummary.prototype.getTax = function(done) {
-	request.post({
-		url: 'https://some-tax-service.com/request',
-		method: 'POST',
-		json: {
-			subtotal: this.getSubtotal()
-		}
-	}, function(error, response, body) {
-		if (!error && response.statusCode === 200) {
-	    done(body.tax);
-	  }
-	});
+  request.post({
+    url: 'https://some-tax-service.com/request',
+    method: 'POST',
+    json: {
+      subtotal: this.getSubtotal()
+    }
+  }, function(error, response, body) {
+    if (!error && response.statusCode === 200) {
+      done(body.tax);
+    }
+  });
 };
 ```
 
