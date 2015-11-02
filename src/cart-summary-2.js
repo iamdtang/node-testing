@@ -1,4 +1,5 @@
 var request = require('request');
+var tax = require('./tax');
 
 function CartSummary(items) {
 	this._items = items;
@@ -15,16 +16,8 @@ CartSummary.prototype.getSubtotal = function() {
 };
 
 CartSummary.prototype.getTax = function(done) {
-	request.post({
-		url: 'https://some-tax-service.com/request',
-		method: 'POST',
-		json: {
-			subtotal: this.getSubtotal()
-		}
-	}, function(error, response, body) {
-		if (!error && response.statusCode === 200) {
-	    done(body.tax);
-	  }
+	tax.calculate(this.getSubtotal(), function(taxInfo) {
+		done(taxInfo.tax);
 	});
 };
 
