@@ -183,9 +183,9 @@ CartSummary.prototype.getTax = function(done) {
 			subtotal: this.getSubtotal()
 		}
 	}, function(error, response, body) {
-    if (!error && response.statusCode === 200) {
-      done(body.tax);
-    }
+		if (!error && response.statusCode === 200) {
+	    done(body.tax);
+	  }
 	});
 };
 ```
