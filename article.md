@@ -212,6 +212,8 @@ module.exports = {
 };
 ```
 
+Here is the test for the new `tax` module.
+
 ```js
 // tests/tax-test.js
 
@@ -234,6 +236,8 @@ describe('tax', function() {
   });
 });
 ```
+
+Notice that in this test I am using `eql` instead of `equal`. `equal` asserts that the target is strictly equal (using ===) to the value whereas `eql` performs a deep comparison between the target and the value.
 
 Here is our revised `getTax()` method:
 
@@ -304,6 +308,6 @@ Sinon is a very powerful library and offers a lot more than just stubbing.
 
 ### Conclusion
 
-In this post, we looked at a few practical examples of unit testing in Node using the Mocha testing framework, the Chai assertion library, Nock for HTTP mocking, and Sinon for stubbing. I hope you enjoyed this post. If you have any questions, ask them below or reach me on Twitter at [@skaterdav85](https://twitter.com/skaterdav85).
+In this post, we looked at a few practical examples of unit testing in Node using the Mocha testing framework, the Chai assertion library, Nock for HTTP mocking, and Sinon for stubbing. I hope you enjoyed this post. If you have any questions, ask them below or reach me on Twitter [@skaterdav85](https://twitter.com/skaterdav85).
 
 [Source code](https://github.com/skaterdav85/node-testing)
