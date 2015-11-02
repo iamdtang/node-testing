@@ -160,7 +160,7 @@ it('getTax() should execute the callback function with the tax amount', function
 
 In this test, when a POST request comes in to https://some-tax-service.com/request, Nock will execute our specified function that responds with a JSON payload that contains the tax, which is 10% of the the subtotal passed in the request payload.
 
-This example also exhibits asynchronous testing. Specifying a parameter in the `it` block (called `done` in this example), Mocha will pass in a function and wait for this function to execute before ending the tests. The test will timeout and error if `done` is not invoked within 2000 milliseconds.
+This example also exhibits asynchronous testing. Specifying a parameter in the `it` block (called `done` in this example), Mocha will pass in a function and wait for it to execute before ending the tests. The test will timeout and error if `done` is not invoked within 2000 milliseconds.
 
 Let's write the implementation of `getTax` to make this test pass.
 
