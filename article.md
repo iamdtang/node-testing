@@ -91,7 +91,7 @@ it('getSubtotal() should return the sum of the price * quantity for all items', 
 
 ![failing-test-2.png](failing-test-2.png)
 
-The failing output shows what value `getSubtotal()` returned in red and what value we expected in green. Let's revise `getSubtotal()` so our test passes.
+The failing output shows what value `getSubtotal` returned in red and what value we expected in green. Let's revise `getSubtotal` so our test passes.
 
 ```js
 // src/cart-summary.js
