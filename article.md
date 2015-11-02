@@ -42,7 +42,7 @@ The `describe` function is used to set up a group of tests. The first argument i
 
 To run this test, run `mocha tests --watch` from the root of the project. You should see something like this:
 
-![failing-test.png](failing-test.png)
+![failing-test-1.png](failing-test-1.png)
 
 Our test is failing because we have not yet implemented `CartSummary`. Let's do that.
 
@@ -60,7 +60,7 @@ module.exports = CartSummary;
 
 Here I've written the minimal amount of code to make our test pass.
 
-![passing test](passing-test.png)
+![passing test-1](passing-test-1.png)
 
 
 Let's move on to our next test:
@@ -112,6 +112,8 @@ CartSummary.prototype.getSubtotal = function() {
 So far writing tests hasn't been too difficult. At this point, you might be saying to yourself: "Most of my code makes database and web service calls. How do I test that?". Let me show you.
 
 Let's say we want our `CartSummary` class to have a method for getting the tax for the subtotal. To figure out the tax, we're going to hit a fictitious API that deals with tax calculation. This API expects a POST request to https://some-tax-service.com/request with a JSON payload containing the subtotal. Now remember, unit tests are supposed to be isolated from database and API calls to ensure predictability and repeatability. So how do we unit test a method that makes an API call? Let me introduce [Nock](https://github.com/pgte/nock), an HTTP mocking library for Node. This library overrides Node's `http.request` function so that requests are not actually made. Let's see how we can use this in our test.
+
+First, install Nock: `npm install nock --save-dev`.
 
 ```js
 // tests/cart-summary-test.js
@@ -177,3 +179,121 @@ CartSummary.prototype.getTax = function(done) {
 	});
 };
 ```
+
+### Stubbing with Sinon
+
+Let's say we now want to break out our tax calculation into its own module so that it can be used in other parts of our system. We could simply move the code from `getTax()` into its own module `tax.calculate()` with its own test and call it from `CartSummary.prototype.getTax()`.
+
+```js
+// src/tax.js
+
+var request = require('request');
+
+module.exports = {
+	calculate: function(subtotal, done) {
+		request.post({
+			url: 'https://some-tax-service.com/request',
+			method: 'POST',
+			json: {
+				subtotal: subtotal
+			}
+		}, function(error, response, body) {
+			if (!error && response.statusCode === 200) {
+		    done(body);
+		  }
+		});
+	}
+};
+```
+
+```js
+// tests/tax-test.js
+
+describe('tax', function() {
+  it('calculate() should execute the callback function with the tax amount', function(done) {
+    nock('https://some-tax-service.com')
+      .post('/request')
+      .reply(200, function(uri, requestBody) {
+        return {
+          tax: JSON.parse(requestBody).subtotal * 0.10
+        };
+      });
+
+    tax.calculate(100, function(taxInfo) {
+      expect(taxInfo).to.eql({
+        tax: 10
+      });
+      done();
+    });
+  });
+});
+```
+
+Here is our revised `getTax()` method:
+
+```js
+CartSummary.prototype.getTax = function(done) {
+	tax.calculate(this.getSubtotal(), function(taxInfo) {
+		done(taxInfo.tax);
+	});
+};
+```
+
+All tests should be passing. However, the test for `CartSummary.prototype.getTax()` knows about the implementation of `tax.calculate()` because it is using Nock to intercept the HTTP request made to the tax API service. If the implementation of `tax.calculate()` changed, such as a different tax API service was used, so would our test for `CartSummary.prototype.getTax()`. Instead, a better approach would be to fake out `tax.calculate()` when testing `CartSummary.prototype.getTax()` using a type of test double known as a stub provided by Sinon.
+
+To install Sinon, run `npm install sinon --save-dev`.
+
+Let's revise `getTax()` test to use Sinon instead of Nock.
+
+```js
+// tests/cart-summary-2-test.js
+
+describe('getTax()', function() {
+ beforeEach(function() {
+   sinon.stub(tax, 'calculate', function(subtotal, done) {
+     done({
+       tax: 30
+     });
+   });
+ });
+
+ afterEach(function() {
+   tax.calculate.restore();
+ });
+
+ it('get Tax() should execute the callback function with the tax amount', function(done) {
+   var cartSummary = new CartSummary([
+     {
+       id: 1,
+       quantity: 4,
+       price: 50
+     },
+     {
+       id: 2,
+       quantity: 2,
+       price: 30
+     },
+     {
+       id: 3,
+       quantity: 1,
+       price: 40
+     }
+   ]);
+
+   cartSummary.getTax(function(tax) {
+     expect(tax).to.equal(30);
+     done();
+   });
+ });
+});
+```
+
+A stub is a function with pre-programmed behavior that overrides another function. In this example, we are stubbing out `tax.calculate()` with a function that simply executes the callback with a static tax. This happens in a `beforeEach()` block which executes before every test. After each test, the `afterEach()` block is excuted which restores the original `tax.calculate()`. By writing our test this way and using a stub, the test for `getTax()` never has to change if the underlying details of `tax.calculate()` change and the public API stays the same.
+
+Sinon is a very powerful library and offers a lot more than just stubbing.
+
+### Conclusion
+
+In this post, we looked at a few practical examples of unit testing in Node using the Mocha testing framework, the Chai assertion library, Nock for HTTP mocking, and Sinon for stubbing. I hope you enjoyed this post. If you have any questions, ask them below or reach me on Twitter at [@skaterdav85](https://twitter.com/skaterdav85).
+
+[Source code](https://github.com/skaterdav85/node-testing)
