@@ -184,7 +184,7 @@ CartSummary.prototype.getTax = function(done) {
 
 ### Stubbing with Sinon
 
-Let's say we now want to break out our tax calculation into its own module so that it can be used in other parts of our system. We could simply move the code from `getTax` into its own module `tax.calculate` with its own test and call it from `getTax`.
+Let's say we now want to break out our tax calculation into its own module so that it can be used in other parts of our system. We could simply move the code from `getTax` into its own `tax` module with its own test and call it from `getTax`.
 
 ```js
 // src/tax.js
