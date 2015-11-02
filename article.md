@@ -294,7 +294,7 @@ describe('getTax()', function() {
 });
 ```
 
-A stub is a function with pre-programmed behavior that overrides another function. In this example, we are stubbing out `tax.calculate` with a function that simply executes the callback with a static tax. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is excuted which restores the original `tax.calculate`. By writing our test for the refactored `getTax` using a stub instead of Nock, the test never has to change if the underlying details of `tax.calculate` change and the public API stays the same.
+A stub is a function with pre-programmed behavior that overrides another function. In this example, we are stubbing out `tax.calculate` with a function that simply executes the callback with a static tax. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is excuted which restores the original `tax.calculate`. By writing our test for the refactored `getTax` method using a stub instead of Nock, the test never has to change if the underlying details of `tax.calculate` change and the public API stays the same.
 
 Sinon is a very powerful library and offers a lot more than just stubbing.
 
