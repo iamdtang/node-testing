@@ -137,23 +137,19 @@ it('getTax() should execute the callback function with the tax amount', function
       };
     });
 
-  var cartSummary = new CartSummary([
-    {
-      id: 1,
-      quantity: 4,
-      price: 50
-    },
-    {
-      id: 2,
-      quantity: 2,
-      price: 30
-    },
-    {
-      id: 3,
-      quantity: 1,
-      price: 40
-    }
-  ]);
+  var cartSummary = new CartSummary([{
+    id: 1,
+    quantity: 4,
+    price: 50
+  }, {
+    id: 2,
+    quantity: 2,
+    price: 30
+  }, {
+    id: 3,
+    quantity: 1,
+    price: 40
+  }]);
 
   cartSummary.getTax(function(tax) {
     expect(tax).to.equal(30);
@@ -196,19 +192,19 @@ Let's say we now want to break out our tax calculation into its own module so th
 var request = require('request');
 
 module.exports = {
-	calculate: function(subtotal, done) {
-		request.post({
-			url: 'https://some-tax-service.com/request',
-			method: 'POST',
-			json: {
-				subtotal: subtotal
-			}
-		}, function(error, response, body) {
-			if (!error && response.statusCode === 200) {
-		    done(body);
-		  }
-		});
-	}
+  calculate: function(subtotal, done) {
+    request.post({
+      url: 'https://some-tax-service.com/request',
+      method: 'POST',
+      json: {
+        subtotal: subtotal
+      }
+    }, function(error, response, body) {
+      if (!error && response.statusCode === 200) {
+        done(body);
+      }
+    });
+  }
 };
 ```
 
@@ -243,9 +239,9 @@ Here is our revised `getTax()` method:
 
 ```js
 CartSummary.prototype.getTax = function(done) {
-	tax.calculate(this.getSubtotal(), function(taxInfo) {
-		done(taxInfo.tax);
-	});
+  tax.calculate(this.getSubtotal(), function(taxInfo) {
+    done(taxInfo.tax);
+  });
 };
 ```
 
@@ -263,42 +259,38 @@ Let's revise `getTax` test to use Sinon instead of Nock.
 // tests/cart-summary-2-test.js
 
 describe('getTax()', function() {
- beforeEach(function() {
-   sinon.stub(tax, 'calculate', function(subtotal, done) {
-     done({
-       tax: 30
-     });
-   });
- });
+  beforeEach(function() {
+    sinon.stub(tax, 'calculate', function(subtotal, done) {
+      done({
+        tax: 30
+      });
+    });
+  });
 
- afterEach(function() {
-   tax.calculate.restore();
- });
+  afterEach(function() {
+    tax.calculate.restore();
+  });
 
- it('get Tax() should execute the callback function with the tax amount', function(done) {
-   var cartSummary = new CartSummary([
-     {
-       id: 1,
-       quantity: 4,
-       price: 50
-     },
-     {
-       id: 2,
-       quantity: 2,
-       price: 30
-     },
-     {
-       id: 3,
-       quantity: 1,
-       price: 40
-     }
-   ]);
+  it('get Tax() should execute the callback function with the tax amount', function(done) {
+    var cartSummary = new CartSummary([{
+      id: 1,
+      quantity: 4,
+      price: 50
+    }, {
+      id: 2,
+      quantity: 2,
+      price: 30
+    }, {
+      id: 3,
+      quantity: 1,
+      price: 40
+    }]);
 
-   cartSummary.getTax(function(tax) {
-     expect(tax).to.equal(30);
-     done();
-   });
- });
+    cartSummary.getTax(function(tax) {
+      expect(tax).to.equal(30);
+      done();
+    });
+  });
 });
 ```
 
