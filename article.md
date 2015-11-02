@@ -166,7 +166,7 @@ In this test, when a POST request comes in to https://some-tax-service.com/reque
 
 This example also exhibits asynchronous testing. Specifying a parameter in the `it` block (called `done` in this example), Mocha will pass in a function and wait for this function to execute before ending the tests. The test will timeout and error if `done` is not invoked within 2000 milliseconds.
 
-Let's write the implementation of `getTax()` to make this test pass.
+Let's write the implementation of `getTax` to make this test pass.
 
 ```js
 // src/cart-summary.js
@@ -188,7 +188,7 @@ CartSummary.prototype.getTax = function(done) {
 
 ### Stubbing with Sinon
 
-Let's say we now want to break out our tax calculation into its own module so that it can be used in other parts of our system. We could simply move the code from `getTax()` into its own module `tax.calculate()` with its own test and call it from `getTax()`.
+Let's say we now want to break out our tax calculation into its own module so that it can be used in other parts of our system. We could simply move the code from `getTax` into its own module `tax.calculate` with its own test and call it from `getTax`.
 
 ```js
 // src/tax.js
@@ -245,7 +245,7 @@ CartSummary.prototype.getTax = function(done) {
 };
 ```
 
-All tests should be passing. However, the test for `getTax()` knows about the implementation of `tax.calculate()` because it is using Nock to intercept the HTTP request made to the tax API service. If the implementation of `tax.calculate()` changed, such as a different tax API service was used, so would our test for `getTax()`. Instead, a better approach would be to fake out `tax.calculate()` when testing `getTax()` using a type of test double known as a stub provided by Sinon.
+All tests should be passing. However, the test for `getTax` knows about the implementation of `tax.calculate` because it is using Nock to intercept the HTTP request made to the tax API service. If the implementation of `tax.calculate` changed, such as a different tax API service was used, so would our test for `getTax`. Instead, a better approach would be to fake out `tax.calculate` when testing `getTax` using a type of test double known as a stub provided by Sinon.
 
 To install Sinon, run:
 
@@ -253,7 +253,7 @@ To install Sinon, run:
 npm install sinon --save-dev
 ```
 
-Let's revise `getTax()` test to use Sinon instead of Nock.
+Let's revise `getTax` test to use Sinon instead of Nock.
 
 ```js
 // tests/cart-summary-2-test.js
@@ -298,7 +298,7 @@ describe('getTax()', function() {
 });
 ```
 
-A stub is a function with pre-programmed behavior that overrides another function. In this example, we are stubbing out `tax.calculate()` with a function that simply executes the callback with a static tax. This happens in a `beforeEach()` block which executes before every test. After each test, the `afterEach()` block is excuted which restores the original `tax.calculate()`. By writing our test this way and using a stub, the test for `getTax()` never has to change if the underlying details of `tax.calculate()` change and the public API stays the same.
+A stub is a function with pre-programmed behavior that overrides another function. In this example, we are stubbing out `tax.calculate` with a function that simply executes the callback with a static tax. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is excuted which restores the original `tax.calculate`. By writing our test this way and using a stub, the test for `getTax` never has to change if the underlying details of `tax.calculate` change and the public API stays the same.
 
 Sinon is a very powerful library and offers a lot more than just stubbing.
 
