@@ -96,6 +96,10 @@ The failing output shows what value `getSubtotal` returned in red and what value
 ```js
 // src/cart-summary.js
 
+function CartSummary(items) {
+	this._items = items;
+}
+
 CartSummary.prototype.getSubtotal = function() {
 	if (this._items.length) {
 		return this._items.reduce(function(subtotal, item) {
