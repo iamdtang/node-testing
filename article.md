@@ -1,7 +1,7 @@
 Unit Testing in Node
 ====================
 
-In this post we are going to look at unit testing in Node using the Mocha test framework. To install Mocha, simply run:
+In this post we are going to look at unit testing in Node using the Mocha test framework along with Chai, Sinon, and Nock. To install Mocha, simply run:
 
 ```
 npm install mocha -g
