@@ -46,7 +46,7 @@ describe('CartSummary', function() {
 });
 ```
 
-The `describe` function is used to set up a group of tests with a name. I tend to put the module under test as the name. A test is written using the `it` function. The `it` function is given a description as the first argument of what the test should do. The second argument of the `it` function is a function that will contain one or more assertions (also called expectations) using Chai in this example. Our first test simply verifies that the subtotal is 0 if the cart has no items.
+The `describe` function is used to set up a group of tests with a name. I tend to put the module under test as the name. A test is written using the `it` function. The `it` function is given a description as the first argument of what the module under test should do. The second argument of the `it` function is a function that will contain one or more assertions (also called expectations) using Chai in this example. Our first test simply verifies that the subtotal is 0 if the cart has no items.
 
 To run this test, run `mocha tests --watch` from the root of the project. You should see something like this:
 
