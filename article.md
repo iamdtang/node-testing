@@ -190,6 +190,8 @@ CartSummary.prototype.getTax = function(done) {
 };
 ```
 
+Here `getTax` uses the `request` library to make a POST request to the tax API with a JSON payload containing the subtotal. When the request completes, the callback function passed to `getTax`, called `done`, will execute with that `tax` property in the JSON response.
+
 ### Stubbing with Sinon
 
 Let's say we now want to break out our tax calculation into its own module so that it can be used in other parts of our system. We could simply move the code from `getTax` into its own `tax` module with its own test and call it from `getTax`.
