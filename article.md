@@ -23,7 +23,13 @@ Chai comes with 3 different assertion flavors. It has the `should` style, the `e
 
 ### Your First Test
 
-For our first example, we will use TDD to create a `CartSummary` constructor function, which will be used to total up items placed in a shopping cart.
+For our first example, we will use test driven development (TDD) to create a `CartSummary` constructor function, which will be used to total up items placed in a shopping cart. In short, TDD is the practice of writing tests first before an implementation to drive the design of your code. TDD is practiced in the following steps:
+
+1. Write a test and watch it fail
+2. Write the minimal amount of code to make that test pass
+3. Repeat
+
+By following this process, you are guaranteed to have tests for your code because you are writing them first. It is not always possible, or it is sometimes very difficult, to write unit tests for existing code without tests. Anyways, enough about TDD, let's see some code!
 
 ```js
 // tests/cart-summary-test.js
