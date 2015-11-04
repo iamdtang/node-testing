@@ -117,9 +117,9 @@ CartSummary.prototype.getSubtotal = function() {
 
 ### Testing HTTP Requests
 
-So far writing tests has not been too difficult. At this point, you might be saying to yourself: "Most of my code makes database and web service calls. How do I test that?". Let me show you.
+The code tested above is straighforward to test because it does not have any external dependencies. `getSubtotal` was simply given some input and returned an output. You're probably saying to yourself: "Most of my code makes database and web service calls. How do I test that?". Let me show you.
 
-Let's say we want our `CartSummary` class to have a method for getting the tax from a subtotal. To calculate the tax, we are going to hit a fictitious API that deals with the intricacies of tax calculation. This API expects a POST request to https://some-tax-service.com/request with a JSON payload containing the subtotal. Now remember, unit tests are supposed to be isolated from database and API calls to ensure speed, predictability, and repeatability. So how do we unit test a method that makes an API call? Let me introduce [Nock](https://github.com/pgte/nock), an HTTP mocking library for Node. This library overrides Node's `http.request` function so that HTTP requests are not actually made. Let's see how we can use this in our test.
+Let's say we want our `CartSummary` class to have a method for getting the tax from a subtotal. To calculate the tax, we are going to hit a fictitious API that deals with the intricacies of tax calculation. This API expects a POST request to https://some-tax-service.com/request with a JSON payload containing the subtotal. Now remember, unit tests are supposed to be isolated from database and API calls to ensure speed, predictability, and repeatability. If a unit test hit an API for real, then it has an external dependency which makes that test brittle. If the API goes down or we make too many requests in a small time period, our test fails. If the API takes a long time to respond, our tests take longer to run. Instead, we want to simulate the request but not actually make it. As long as our implementation abides by API contract, then our code should work when it hits the API for real. By simulating the API call in our unit test, our test suite is no longer dependent on the API and can execute much more quickly. So how do we unit test a method that makes an API call? Let me introduce [Nock](https://github.com/pgte/nock), an HTTP mocking library for Node. This library overrides Node's `http.request` function so that HTTP requests are not actually made. Let's see how we can use this in our test.
 
 First, install Nock:
 
@@ -168,7 +168,7 @@ it('getTax() should execute the callback function with the tax amount', function
 
 In this test, when a POST request comes in to https://some-tax-service.com/request, Nock will execute our specified function that responds with a JSON payload that contains the tax, which is 10% of the the subtotal passed in the request payload.
 
-This example also exhibits asynchronous testing. Specifying a parameter in the `it` block (called `done` in this example), Mocha will pass in a function and wait for it to execute before ending the tests. The test will timeout and error if `done` is not invoked within 2000 milliseconds.
+This example also exhibits asynchronous testing. Specifying a parameter in the `it` function (called `done` in this example), Mocha will pass in a function and wait for it to execute before ending the tests. The test will timeout and error if `done` is not invoked within 2000 milliseconds.
 
 Let's write the implementation of `getTax` to make this test pass.
 
@@ -253,7 +253,7 @@ CartSummary.prototype.getTax = function(done) {
 };
 ```
 
-All tests should be passing. However, the test for `getTax` knows about the implementation of `tax.calculate` because it is using Nock to intercept the HTTP request made to the tax API service. If the implementation of `tax.calculate` changed, such as a different tax API service was used, so would our test for `getTax`. Instead, a better approach would be to fake out `tax.calculate` when testing `getTax` using a type of test double known as a stub provided by Sinon.
+All tests should be passing. However, the test for `getTax` knows about the implementation of `tax.calculate` because it is using Nock to intercept the HTTP request made to the tax API service. If the implementation of `tax.calculate` changed, such as a different tax API service was used, our test for `getTax` would also need to change. Instead, a better approach would be to fake out `tax.calculate` when testing `getTax` using a stub, a controllable replacement. We can create this stub using the Sinon library.
 
 To install Sinon, run:
 
@@ -261,7 +261,7 @@ To install Sinon, run:
 npm install sinon --save-dev
 ```
 
-Let's revise the `getTax` test to use Sinon instead of Nock.
+Let's revise the `getTax` test to use a Sinon stub instead of Nock.
 
 ```js
 // tests/cart-summary-2-test.js
@@ -302,7 +302,7 @@ describe('getTax()', function() {
 });
 ```
 
-A stub is a function with pre-programmed behavior that overrides another function. In this example, we are stubbing out `tax.calculate` with a function that simply executes the callback with a static tax. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is excuted which restores the original `tax.calculate`. By writing our test for the refactored `getTax` method using a stub instead of Nock, the test never has to change if the underlying implementation of `tax.calculate` changes. Note that the public interface of `tax.calculate` needs to be kept the same.
+In this example, we are stubbing out `tax.calculate` with a pre-programmed replacement function that simply executes the callback with a static tax. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is excuted which restores the original `tax.calculate`. By writing our test for the refactored `getTax` method using a stub instead of Nock, the test never has to change if the underlying implementation of `tax.calculate` changes. Note that the public interface of `tax.calculate` needs to be kept the same.
 
 Sinon is a very powerful library and offers a lot more than just stubs including spies, mocks, fake servers, and plenty more.
 
