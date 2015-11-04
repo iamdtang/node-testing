@@ -35,7 +35,7 @@ By following this process, you are guaranteed to have tests for your code becaus
 // tests/cart-summary-test.js
 
 var chai = require('chai');
-var expect = chai.expect;
+var expect = chai.expect; // we are using the "expect" style of Chai
 var CartSummary = require('./../src/cart-summary.js');
 
 describe('CartSummary', function() {
