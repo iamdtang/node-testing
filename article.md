@@ -190,7 +190,7 @@ CartSummary.prototype.getTax = function(done) {
 };
 ```
 
-Here `getTax` uses the `request` library to make a POST request to the tax API with a JSON payload containing the subtotal. When the request completes, the callback function passed to `getTax`, called `done`, will execute with that `tax` property in the JSON response.
+Here `getTax` uses the `request` library to make a POST request to the tax API with a JSON payload containing the subtotal. When the request completes, the callback function passed to `getTax`, called `done`, will execute with the `tax` property in the JSON response.
 
 ### Stubbing with Sinon
 
