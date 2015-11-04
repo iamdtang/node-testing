@@ -1,7 +1,7 @@
 Unit Testing in Node
 ====================
 
-Testing is an important practice in software development to improve software quality. In this post we are going to look at unit testing in Node using the Mocha test framework along with Chai for assertions, Sinon stubs, and Nock for mocking HTTP requests. Let's get started!
+Testing is an important practice in software development to improve software quality. There are many forms of testing; manual testing, acceptance testing, unit testing, and a few others. In this post we are going to look at unit testing in Node using the Mocha test framework. Unit tests typically make up the majority of test suites. Unit tests test small units of code, typically a method or a function, __in isolation__. The key thing to remember is the __in isolation__ aspect. In this post, we'll start off writing unit tests for a function that simply takes some input, returns some output, and has no dependencies. Then we will look at how we can write isolated unit tests for functions that make HTTP requests using a library called Nock. Finally we will look at how to test modules that depend on other modules using stubs provided by the Sinon library. Let's get started!
 
 To install Mocha, simply run:
 
