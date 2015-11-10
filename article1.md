@@ -3,7 +3,7 @@ Unit Testing in Node - Part 1
 
 Testing is an important practice in software development to improve software quality. There are many forms of testing; manual testing, acceptance testing, unit testing, and a few others. In this post we are going to look at unit testing in Node using the Mocha test framework. Unit tests typically make up the majority of test suites. They test small units of code, typically a method or a function, __in isolation__. The key thing to remember is the __in isolation__ aspect.
 
-In this post, we'll start off writing unit tests for a function that simply takes some input, returns some output, and has no dependencies. Then we will look at stubs, a type of test double using the Sinon library. Lastly, we will look at how to test asynchronous code in Mocha. Let's get started!
+In this post, we'll start off writing unit tests for a function that simply takes some input, returns some output, and has no dependencies. Then we will look at two types of test doubles, stubs and spies, using the Sinon library. Lastly, we will look at how to test asynchronous code in Mocha. Let's get started!
 
 ### Installing Mocha and Chai
 
