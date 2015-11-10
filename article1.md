@@ -165,7 +165,7 @@ describe('getTax()', function() {
           amount: 30
         });
       }, 0);
-		});
+    });
   });
 
   afterEach(function() {
