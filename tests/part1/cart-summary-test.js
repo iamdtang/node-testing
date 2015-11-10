@@ -1,9 +1,22 @@
 var chai = require('chai');
-var nock = require('nock');
+var sinon = require('sinon');
 var expect = chai.expect;
-var CartSummary = require('./../src/cart-summary.js');
+var CartSummary = require('./../../src/part1/cart-summary');
+var tax = require('./../../src/part1/tax');
 
 describe('CartSummary', function() {
+	beforeEach(function() {
+		sinon.stub(tax, 'calculate', function(subtotal, state, done) {
+			done({
+				tax: 30
+			});
+		});
+	});
+
+	afterEach(function() {
+		tax.calculate.restore();
+	});
+
 	it('getSubtotal() should return 0 if no items are passed in', function() {
 		var cartSummary = new CartSummary([]);
 		expect(cartSummary.getSubtotal()).to.equal(0);
@@ -31,14 +44,6 @@ describe('CartSummary', function() {
 	});
 
 	it('getTax() should execute the callback function with the tax amount', function(done) {
-		nock('https://some-tax-service.com')
-			.post('/request')
-			.reply(200, function(uri, requestBody) {
-				return {
-					tax: JSON.parse(requestBody).subtotal * 0.10
-				};
-			});
-
 		var cartSummary = new CartSummary([
 			{
 				id: 1,
@@ -57,7 +62,7 @@ describe('CartSummary', function() {
 			}
 		]);
 
-		cartSummary.getTax(function(tax) {
+		cartSummary.getTax('NY', function(tax) {
 			expect(tax).to.equal(30);
 			done();
 		});

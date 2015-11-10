@@ -1,4 +1,3 @@
-var request = require('request');
 var tax = require('./tax');
 
 function CartSummary(items) {
@@ -15,8 +14,8 @@ CartSummary.prototype.getSubtotal = function() {
 	return 0;
 };
 
-CartSummary.prototype.getTax = function(done) {
-	tax.calculate(this.getSubtotal(), function(taxInfo) {
+CartSummary.prototype.getTax = function(state, done) {
+	tax.calculate(this.getSubtotal(), state, function(taxInfo) {
 		done(taxInfo.tax);
 	});
 };
