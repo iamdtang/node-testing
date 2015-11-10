@@ -217,7 +217,7 @@ This is just a function that calls `done` with a static tax details object conta
 
 This test verifies that the callback function passed to `getTax` is executed with the tax amount, not the entire tax details object that gets passed to the callback function for `tax.calculate`. As you can see, our test for `getTax` is passing even though we haven't implemented `tax.calculate` yet. We've merely defined the interface of it. As long as `tax.calculate` upholds to this interface, both modules should work correctly together.
 
-This example also exhibits asynchronous testing. Specifying a parameter in the `it` function (called `done` in this example), Mocha will pass in a function and wait for it to execute before ending the test. The test will timeout and error if `done` is not invoked within 2000 milliseconds. If we had not made this an asynchronous test, the test would have finished before our expectation has run.
+This example also exhibits asynchronous testing. Specifying a parameter in the `it` function (called `done` in this example), Mocha will pass in a function and wait for it to execute before ending the test. The test will timeout and error if `done` is not invoked within 2000 milliseconds. If we had not made this an asynchronous test, the test would have finished before our expectation has run, leading us to think all of our tests are passing when in reality they are not.
 
 ### Spies with Sinon
 
