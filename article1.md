@@ -120,17 +120,16 @@ Our test passes! We have successfully used TDD to implement the `getSubtotal` me
 
 ### Stubs with Sinon
 
-Let's say we now want to add tax calculation to `CartSummary` in a `getTax()` method:
+Let's say we now want to add tax calculation to `CartSummary` in a `getTax()` method. The end usage will look like this:
 
 ```js
-CartSummary.prototype.getTax = function(state, done) {
-  tax.calculate(this.getSubtotal(), state, function(taxInfo) {
-    done(taxInfo.amount);
-  });
-};
+var cartSummary = new CartSummary([ /* ... */ ]);
+cartSummary.getTax(300, 'NY', function() {
+  // executed when the tax API request has finished
+});
 ```
 
-The `getTax` method will use another module we will create called `tax` with a `calculate` method that will deal with the intricacies of calculating tax by state. For now, the `tax` module has not been created. However, we can still finish our `getTax` method as long as we identify a contract for the `tax` module. This contact will state that there should be a module called `tax` with a `calculate` method that takes three arguments: a subtotal, a state, and a callback function that will execute when the tax API request has completed. As mentioned before, unit tests test units in isolation. We want to test our `getTax` method isolated from `tax.calculate`. As long as `tax.calculate` abides by its code contract, or interface, `getTax` should work. What we can do is fake out `tax.calculate` when testing `getTax` using a stub, a type of test double that acts as a controllable replacement. Test doubles are often compared to stunt doubles, as they replace one object with another for testing purposes, similar to how actors and actresses are replaced with stunt doubles for dangerous action scenes. We can create this stub using the Sinon library.
+The `getTax` method will use another module we will create called `tax` with a `calculate` method that will deal with the intricacies of calculating tax by state. Even though we have not implemented `tax`, we can still finish our `getTax` method as long as we identify a contract for the `tax` module. This contact will state that there should be a module called `tax` with a `calculate` method that takes three arguments: a subtotal, a state, and a callback function that will execute when the tax API request has completed. As mentioned before, unit tests test units in isolation. We want to test our `getTax` method isolated from `tax.calculate`. As long as `tax.calculate` abides by its code contract, or interface, `getTax` should work. What we can do is fake out `tax.calculate` when testing `getTax` using a stub, a type of test double that acts as a controllable replacement. Test doubles are often compared to stunt doubles, as they replace one object with another for testing purposes, similar to how actors and actresses are replaced with stunt doubles for dangerous action scenes. We can create this stub using the Sinon library.
 
 To install Sinon, run:
 
@@ -144,7 +143,7 @@ The first thing we have to do before we can stub out the `tax.calculate` method 
 // src/part1/tax.js
 module.exports = {
   calculate: function(subtotal, state, done) {
-    // implemented later
+    // implemented later or in parallel by our coworker
   }
 };
 ```
@@ -218,6 +217,16 @@ This is just a function that calls `done` with a static tax details object conta
 This test verifies that the callback function passed to `getTax` is executed with the tax amount, not the entire tax details object that gets passed to the callback function for `tax.calculate`. As you can see, our test for `getTax` is passing even though we haven't implemented `tax.calculate` yet. We've merely defined the interface of it. As long as `tax.calculate` upholds to this interface, both modules should work correctly together.
 
 This example also exhibits asynchronous testing. Specifying a parameter in the `it` function (called `done` in this example), Mocha will pass in a function and wait for it to execute before ending the test. The test will timeout and error if `done` is not invoked within 2000 milliseconds. If we had not made this an asynchronous test, the test would have finished before our expectation has run, leading us to think all of our tests are passing when in reality they are not.
+
+Now let's write the implementation for `getTax`:
+
+```js
+CartSummary.prototype.getTax = function(state, done) {
+  tax.calculate(this.getSubtotal(), state, function(taxInfo) {
+    done(taxInfo.amount);
+  });
+};
+```
 
 ### Spies with Sinon
 
