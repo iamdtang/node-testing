@@ -4,5 +4,5 @@ To run the following tests:
 
 ```
 npm install
-mocha tests --watch
+mocha tests --recursive --watch
 ```
