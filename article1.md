@@ -218,7 +218,7 @@ This test verifies that the callback function passed to `getTax` is executed wit
 
 This example also exhibits asynchronous testing. Specifying a parameter in the `it` function (called `done` in this example), Mocha will pass in a function and wait for it to execute before ending the test. The test will timeout and error if `done` is not invoked within 2000 milliseconds. If we had not made this an asynchronous test, the test would have finished before our expectation has run, leading us to think all of our tests are passing when in reality they are not.
 
-Now let's write the implementation for `getTax`:
+Now let's write the implementation for `getTax` to make our test pass:
 
 ```js
 CartSummary.prototype.getTax = function(state, done) {
