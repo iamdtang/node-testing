@@ -223,7 +223,7 @@ This example also exhibits asynchronous testing. Specifying a parameter in the `
 
 One issue that our `getTax` method has is that our test does not verify that `tax.calculate` is called with the correct subtotal and state. Our test would still pass if we hardcoded subtotal and state values in the `getTax` implementation. Go ahead and give it a try in the [sample code](https://github.com/skaterdav85/node-testing). That's no good! To verify `tax.calculate` is called with the correct arguments, we can leverage Sinon spies.
 
-A spy is another type of test double that records how a function is used. This includes information such as what arguments a spy was called with, how many times a spy was called, and if the spy threw an error. The great thing about Sinon stubs is that they are built on top of spies! Here is our updated test:
+A spy is another type of test double that records how a function is used. This includes information such as what arguments a spy is called with, how many times a spy is called, and if the spy throws an error. The great thing about Sinon stubs is that they are built on top of spies! Here is our updated test:
 
 ```js
 it('getTax() should execute the callback function with the tax amount', function(done) {
