@@ -27,7 +27,7 @@ Chai comes with three different assertion flavors. It has the `should` style, th
 
 ### Your First Test
 
-For our first example, we will use test driven development (TDD) to create a `CartSummary` constructor function, which will be used to total up items placed in a shopping cart. In short, TDD is the practice of writing tests first before an implementation to drive the design of your code. TDD is practiced in the following steps:
+For our first example, we will use test driven development (TDD) to create a `CartSummary` constructor function, which will be used to total up items placed in a shopping cart. In short, TDD is the practice of writing tests before an implementation to drive the design of your code. TDD is practiced in the following steps:
 
 1. Write a test and watch it fail
 2. Write the minimal amount of code to make that test pass
