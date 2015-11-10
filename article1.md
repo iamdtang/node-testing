@@ -160,11 +160,11 @@ var tax = require('./../../src/part1/tax');
 describe('getTax()', function() {
   beforeEach(function() {
     sinon.stub(tax, 'calculate', function(subtotal, state, done) {
-			setTimeout(function() {
-				done({
-					amount: 30
-				});
-			}, 0);
+      setTimeout(function() {
+        done({
+          amount: 30
+        });
+      }, 0);
 		});
   });
 
