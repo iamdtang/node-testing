@@ -118,7 +118,7 @@ CartSummary.prototype.getSubtotal = function() {
 
 Our test passes! We have successfully used TDD to implement the `getSubtotal` method.
 
-### Stubbing with Sinon
+### Stubs with Sinon
 
 Let's say we now want to add tax calculation to `CartSummary` in a `getTax()` method:
 
@@ -215,12 +215,51 @@ function(subtotal, state, done) {
 
 This is just a function that calls `done` with a static tax details object containing a tax amount of 30. `setTimeout` is used to mimic the asynchronous behavior of this method since in reality it will be making an asynchronous API call to some tax service. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is executed which restores the original `tax.calculate`.
 
-This test verifies that the callback function passed to `getTax` is executed with the tax amount, not the entire tax details object that gets passed to the callback function for `tax.calculate`. As you can see, our test for `getTax` is passing even though we haven't implemented `tax.calculate` yet. We've merely defined the interface of it. As long as `tax.calculate` upholds to this interface, both modules should work correctly together. Sinon is a very powerful library and offers a lot more than just stubs including spies, mocks, and fake servers which you will find useful as you get more into testing.
+This test verifies that the callback function passed to `getTax` is executed with the tax amount, not the entire tax details object that gets passed to the callback function for `tax.calculate`. As you can see, our test for `getTax` is passing even though we haven't implemented `tax.calculate` yet. We've merely defined the interface of it. As long as `tax.calculate` upholds to this interface, both modules should work correctly together.
 
 This example also exhibits asynchronous testing. Specifying a parameter in the `it` function (called `done` in this example), Mocha will pass in a function and wait for it to execute before ending the test. The test will timeout and error if `done` is not invoked within 2000 milliseconds. If we had not made this an asynchronous test, the test would have finished before our expectation has run.
 
+### Spies with Sinon
+
+One issue that our `getTax` method has is that our test does not verify that `tax.calculate` is called with the correct subtotal and state. Our test would still pass if we hardcoded subtotal and state values in the `getTax` implementation. That's no good! To verify `tax.calculate` is called with the correct arguments, we can leverage Sinon spies.
+
+A spy is another type of test double that records how a function was used. This includes information such as what arguments a spy was called with, how many times a spy was called, and if the spy threw an error. The great thing about Sinon stubs is that they are built on top of spies! Here is our updated test:
+
+```js
+it('getTax() should execute the callback function with the tax amount', function(done) {
+  var cartSummary = new CartSummary([
+    {
+      id: 1,
+      quantity: 4,
+      price: 50
+    },
+    {
+      id: 2,
+      quantity: 2,
+      price: 30
+    },
+    {
+      id: 3,
+      quantity: 1,
+      price: 40
+    }
+  ]);
+
+  cartSummary.getTax('NY', function(taxAmount) {
+    expect(taxAmount).to.equal(30);
+    expect(tax.calculate.getCall(0).args[0]).to.equal(300);
+    expect(tax.calculate.getCall(0).args[1]).to.equal('NY');
+    done();
+  });
+});
+```
+
+Two more expectations were added to this test. `getCall` is used to get the first call to the stub for `tax.calculate`. `args` contains the arguments for that call. We are simply verifying that `tax.calculate` was called with the correct subtotal and state as opposed to hardcoded values.
+
+Sinon is a very powerful library and offers a lot of test double functionality for both Node and browser JavaScript testing that you will find useful so definitely check out the documentation.
+
 ### Conclusion
 
-In this post, we looked at a few practical examples of unit testing in Node using the Mocha testing framework, the Chai assertion library, and Sinon for stubbing. I hope you enjoyed this post. If you have any questions, ask them below or reach me on Twitter [@skaterdav85](https://twitter.com/skaterdav85).
+In this post, we looked at a few practical examples of unit testing in Node using the Mocha testing framework, the Chai assertion library, and Sinon for test doubles in the form of stubbing and spying. I hope you enjoyed this post. If you have any questions, ask them below or reach me on Twitter [@skaterdav85](https://twitter.com/skaterdav85).
 
 [Source code](https://github.com/skaterdav85/node-testing)
