@@ -125,7 +125,7 @@ Let's say we now want to add tax calculation to `CartSummary` in a `getTax()` me
 ```js
 CartSummary.prototype.getTax = function(state, done) {
   tax.calculate(this.getSubtotal(), state, function(taxInfo) {
-    done(taxInfo.tax);
+    done(taxInfo.amount);
   });
 };
 ```
