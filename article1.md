@@ -3,8 +3,7 @@ Unit Testing in Node - Part 1
 
 Testing is an important practice in software development to improve software quality. There are many forms of testing; manual testing, acceptance testing, unit testing, and a few others. In this post we are going to look at unit testing in Node using the Mocha test framework. Unit tests typically make up the majority of test suites. Unit tests test small units of code, typically a method or a function, __in isolation__. The key thing to remember is the __in isolation__ aspect.
 
-
-In this post, we'll start off writing unit tests for a function that simply takes some input, returns some output, and has no dependencies. Then we will look at stubs, a type of test double using the Sinon library.  Let's get started!
+In this post, we'll start off writing unit tests for a function that simply takes some input, returns some output, and has no dependencies. Then we will look at stubs, a type of test double using the Sinon library. Lastly, we will look at how to test asynchronous code in Mocha. Let's get started!
 
 ### Installing Mocha and Chai
 
@@ -138,7 +137,7 @@ To install Sinon, run:
 npm install sinon --save-dev
 ```
 
-The first thing we have to do before we can stub out `tax.calculate` is create that module and method:
+The first thing we have to do before we can stub out the `tax.calculate` method is define it. We don't have to implement the details of it, but the method `calculate` must exist on the `tax` object.
 
 ```js
 // src/part1/tax.js
@@ -153,7 +152,7 @@ Now that `tax.calculate` has been created, we can stub it out with our pre-progr
 // tests/part1/cart-summary-test.js
 // ...
 var sinon = require('sinon');
-var tax = require('./../src/tax');
+var tax = require('./../../src/part1/tax');
 
 describe('getTax()', function() {
   beforeEach(function() {
@@ -191,7 +190,9 @@ describe('getTax()', function() {
 });
 ```
 
-We start by requiring Sinon and our tax module into the test. In this example, we are stubbing out, or replacing, `tax.calculate` with a pre-programmed function that simply executes the callback with a static tax details object. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is executed which restores the original `tax.calculate`. Sinon is a very powerful library and offers a lot more than just stubs including spies, mocks, fake servers, and plenty more.
+We start by requiring Sinon and our tax module into the test. In this example, we are stubbing out, or replacing, `tax.calculate` with a pre-programmed function that simply executes the callback with a static tax details object. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is executed which restores the original `tax.calculate`.
+
+This test is verifying that the callback function passed to `getTax` is executed with the tax amount, not the entire tax details object that gets passed to the callback function for `tax.calculate`. `getTax` simply calls `tax.calculate` with the required data, and invokes its callback with the tax amount. As you can see, our test for `getTax` is passing even though we haven't implemented `tax.calculate` yet. We've merely defined the interface of it. Sinon is a very powerful library and offers a lot more than just stubs including spies, mocks, fake servers, and plenty more.
 
 This example also exhibits asynchronous testing. Specifying a parameter in the `it` function (called `done` in this example), Mocha will pass in a function and wait for it to execute before ending the test. The test will timeout and error if `done` is not invoked within 2000 milliseconds.
 
