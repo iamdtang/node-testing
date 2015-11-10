@@ -7,9 +7,11 @@ var tax = require('./../../src/part1/tax');
 describe('CartSummary', function() {
 	beforeEach(function() {
 		sinon.stub(tax, 'calculate', function(subtotal, state, done) {
-			done({
-				tax: 30
-			});
+			setTimeout(function() {
+				done({
+					amount: 30
+				});
+			}, 0);
 		});
 	});
 
@@ -62,8 +64,8 @@ describe('CartSummary', function() {
 			}
 		]);
 
-		cartSummary.getTax('NY', function(tax) {
-			expect(tax).to.equal(30);
+		cartSummary.getTax('NY', function(taxAmount) {
+			expect(taxAmount).to.equal(30);
 			done();
 		});
 	});

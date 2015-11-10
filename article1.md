@@ -160,10 +160,12 @@ var tax = require('./../../src/part1/tax');
 describe('getTax()', function() {
   beforeEach(function() {
     sinon.stub(tax, 'calculate', function(subtotal, state, done) {
-      done({
-        tax: 30
-      });
-    });
+			setTimeout(function() {
+				done({
+					amount: 30
+				});
+			}, 0);
+		});
   });
 
   afterEach(function() {
@@ -185,25 +187,33 @@ describe('getTax()', function() {
       price: 40
     }]);
 
-    cartSummary.getTax('NY', function(tax) {
-      expect(tax).to.equal(30);
+    cartSummary.getTax('NY', function(taxAmount) {
+      expect(taxAmount).to.equal(30);
       done();
     });
   });
 });
 ```
 
-We start by requiring Sinon and our tax module into the test. To stub out a method in Sinon, we call the `sinon.stub` function and pass it the object with the method being stubbed, the name of the method to be stubbed, and a function that will replace the original during our test. In this example, I have simply stubbed out `tax.calculate` with the following:
+We start by requiring Sinon and our tax module into the test. To stub out a method in Sinon, we call the `sinon.stub` function and pass it the object with the method being stubbed, the name of the method to be stubbed, and a function that will replace the original during our test.
+
+```js
+var stub = sinon.stub(object, 'method', func);
+```
+
+In this example, I have simply stubbed out `tax.calculate` with the following:
 
 ```js
 function(subtotal, state, done) {
-  done({
-    tax: 30
-  });
+  setTimeout(function() {
+    done({
+      amount: 30
+    });
+  }, 0);
 }
 ```
 
-This is just a function that immediately calls the callback function with a static tax details object containing a tax amount of 30. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is executed which restores the original `tax.calculate`.
+This is just a function that calls the callback function with a static tax details object containing a tax amount of 30. `setTimeout` is used to mimic the asynchronous behavior of this method since in reality it will be making an asynchronous API call to some tax service. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is executed which restores the original `tax.calculate`.
 
 This test is verifying that the callback function passed to `getTax` is executed with the tax amount, not the entire tax details object that gets passed to the callback function for `tax.calculate`. `getTax` simply calls `tax.calculate` with the required data, and invokes its callback with the tax amount. As you can see, our test for `getTax` is passing even though we haven't implemented `tax.calculate` yet. We've merely defined the interface of it. Sinon is a very powerful library and offers a lot more than just stubs including spies, mocks, and fake servers which you will find useful as you get more into testing.
 
