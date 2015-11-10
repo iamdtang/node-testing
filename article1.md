@@ -221,7 +221,7 @@ This example also exhibits asynchronous testing. Specifying a parameter in the `
 
 ### Spies with Sinon
 
-One issue that our `getTax` method has is that our test does not verify that `tax.calculate` is called with the correct subtotal and state. Our test would still pass if we hardcoded subtotal and state values in the `getTax` implementation. That's no good! To verify `tax.calculate` is called with the correct arguments, we can leverage Sinon spies.
+One issue that our `getTax` method has is that our test does not verify that `tax.calculate` is called with the correct subtotal and state. Our test would still pass if we hardcoded subtotal and state values in the `getTax` implementation. Go ahead and give it a try in the [sample code](https://github.com/skaterdav85/node-testing). That's no good! To verify `tax.calculate` is called with the correct arguments, we can leverage Sinon spies.
 
 A spy is another type of test double that records how a function was used. This includes information such as what arguments a spy was called with, how many times a spy was called, and if the spy threw an error. The great thing about Sinon stubs is that they are built on top of spies! Here is our updated test:
 
