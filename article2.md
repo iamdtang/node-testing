@@ -13,7 +13,7 @@ First, install Nock:
 npm install nock --save-dev
 ```
 
-Nock is not a library you would use in production. It is development tool used for testing, so we save it to our development dependencies. Now, let's write our first test using Nock to intercept the HTTP request to the fake tax API in our test.
+Nock is not a library you would use in production. It is development tool used for testing, so we save it to our development dependencies. Now, let's write our first test.
 
 ```js
 // tests/part2/tax-test.js
