@@ -1,11 +1,11 @@
 Unit Testing and TDD in Node - Part 2
 =====================================
 
-In the [last article](https://www.codementor.io/nodejs/tutorial/unit-testing-nodejs-tdd-mocha-sinon), we looked at how to write unit tests using Mocha and Chai using a test driven development (TDD) approach. We also looked at how and when to use test doubles using the Sinon library. Specifically, we used a type of test double called a stub to act as a controllable replacement for the `tax` module since it had not been implemented yet and `CartSummary` depended on it. In this article, we will look at how to write unit tests for that `tax` module that makes HTTP requests. Let's get started!
+In the [last article](https://www.codementor.io/nodejs/tutorial/unit-testing-nodejs-tdd-mocha-sinon), we looked at how to write unit tests using Mocha and Chai using a test driven development (TDD) approach. We also looked at how and when to use test doubles using the Sinon library. Specifically, we used a type of test double called a stub to act as a controllable replacement for the `tax` module since it had not been implemented yet and `CartSummary` depended on it. In this article, we will look at how to write unit tests for that `tax` module that makes an HTTP request. Let's get started!
 
 ### Testing HTTP Requests
 
-So you might be wondering how to write units for functions that make HTTP requests. Aren't unit tests supposed to be isolated? Yes, unit tests are supposed to be isolated. Let me introduce [Nock](https://github.com/pgte/nock), an HTTP mocking library for Node. This library overrides Node's `http.request` function so that HTTP requests are not made. Instead, Nock intercepts your HTTP requests and allows you to provide a custom response. Let's see how we can use this to test `tax.calculate`.
+So you might be wondering how to write units for functions that make HTTP requests. Aren't unit tests supposed to be isolated? Yes, unit tests are supposed to be isolated. Thanks to a library called [Nock](https://github.com/pgte/nock), we can fake out HTTP requests made from Node and return canned responses. In short, Nock is an HTTP mocking library for Node. This library works by overriding Node's `http.request` function so that HTTP requests are not made. Instead, Nock intercepts your HTTP requests and allows you to provide a custom response. Let's see how we can use this to test `tax.calculate`.
 
 First, install Nock:
 
@@ -13,13 +13,12 @@ First, install Nock:
 npm install nock --save-dev
 ```
 
-Now, let's write our first test using Nock to intercept the HTTP call to the fake tax API in our test.
+Nock is not a library you would use in production. It is development tool used for testing, so we save it to our development dependencies. Now, let's write our first test using Nock to intercept the HTTP request to the fake tax API in our test.
 
 ```js
 // tests/part2/tax-test.js
 var nock = require('nock');
 // ...
-
 it('calculate() should resolve with an object containing the tax details', function(done) {
   nock('https://some-tax-service.com')
     .post('/request')
