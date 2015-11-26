@@ -1,11 +1,11 @@
-Unit Testing in Node - Part 2
-=============================
+Unit Testing and TDD in Node - Part 2
+=====================================
+
+In the [last article](https://www.codementor.io/nodejs/tutorial/unit-testing-nodejs-tdd-mocha-sinon), we looked at how to write unit tests using Mocha and Chai using a test driven development (TDD) approach. We also looked at how and when to use test doubles using the Sinon library. Specifically, we used a type of test double called a stub to act as a controllable replacement for the `tax` module since it had not been implemented yet and `CartSummary` depended on it. In this article, we will look at how to write unit tests for that `tax` module that makes HTTP requests. Let's get started!
 
 ### Testing HTTP Requests
 
-The code tested above is straighforward to test because it does not have any external dependencies. `getSubtotal` was simply given some input and returned an output. You're probably saying to yourself: "Most of my code makes database and web service calls. How do I test that?". Let me show you.
-
-Let's say we want our `CartSummary` class to have a method for getting the tax from a subtotal. To calculate the tax, we are going to hit a fictitious API that deals with the intricacies of tax calculation. This API expects a POST request to https://some-tax-service.com/request with a JSON payload containing the subtotal. Now remember, unit tests are supposed to be isolated from database and API calls to ensure speed, predictability, and repeatability. If a unit test really hit an API, then it has an external dependency which makes that test brittle. If the API goes down or we make too many requests in a small time period, our test fails. If the API takes a long time to respond, our tests take longer to run. Instead, we want to simulate the request but not actually make it. As long as our implementation abides by the contract of the API, then our code should work when it hits the API for real. By simulating the API call in our unit test, our test suite is no longer dependent on the API and can execute much more quickly. So how do we unit test a method that makes an API call? Let me introduce [Nock](https://github.com/pgte/nock), an HTTP mocking library for Node. This library overrides Node's `http.request` function so that HTTP requests are not actually made. Let's see how we can use this in our test.
+So you might be wondering how to write units for functions that make HTTP requests. Aren't unit tests supposed to be isolated? Yes, unit tests are supposed to be isolated. Let me introduce [Nock](https://github.com/pgte/nock), an HTTP mocking library for Node. This library overrides Node's `http.request` function so that HTTP requests are not made. Instead, Nock intercepts your HTTP requests and allows you to provide a custom response. Let's see how we can use this to test `tax.calculate`.
 
 First, install Nock:
 
@@ -13,82 +13,126 @@ First, install Nock:
 npm install nock --save-dev
 ```
 
-Now we are going to use Nock to intercept the HTTP call to the tax API in our test.
+Now, let's write our first test using Nock to intercept the HTTP call to the fake tax API in our test.
 
 ```js
-// tests/cart-summary-test.js
-
+// tests/part2/tax-test.js
 var nock = require('nock');
-
 // ...
 
-it('getTax() should execute the callback function with the tax amount', function(done) {
+it('calculate() should resolve with an object containing the tax details', function(done) {
   nock('https://some-tax-service.com')
     .post('/request')
     .reply(200, function(uri, requestBody) {
       return {
-        tax: JSON.parse(requestBody).subtotal * 0.10
+        amount: 7
       };
     });
 
-  var cartSummary = new CartSummary([{
-    id: 1,
-    quantity: 4,
-    price: 50
-  }, {
-    id: 2,
-    quantity: 2,
-    price: 30
-  }, {
-    id: 3,
-    quantity: 1,
-    price: 40
-  }]);
-
-  cartSummary.getTax(function(tax) {
-    expect(tax).to.equal(30);
+  tax.calculate(500, 'CA', function(taxDetails) {
+    expect(taxDetails).to.eql({ amount: 7 });
     done();
   });
 });
 ```
 
-In this test, when a POST request comes in to https://some-tax-service.com/request, Nock will execute our specified function that responds with a JSON payload that contains the tax, which is 10% of the the subtotal passed in the request payload.
+When a POST request is made to https://some-tax-service.com/request, Nock will execute our specified function and return the static JSON response. This static response should mimic what the API would really respond with. Our test is failing because we have no implementation yet. Let's do that:
 
-This example also exhibits asynchronous testing. Specifying a parameter in the `it` function (called `done` in this example), Mocha will pass in a function and wait for it to execute before ending the tests. The test will timeout and error if `done` is not invoked within 2000 milliseconds.
+Install the `request` module, which is used to make HTTP requests:
 
-Let's write the implementation of `getTax` to make this test pass.
+```
+npm install request --save
+```
+
+Then:
 
 ```js
-// src/cart-summary.js
-
-CartSummary.prototype.getTax = function(done) {
-  request.post({
-    url: 'https://some-tax-service.com/request',
-    method: 'POST',
-    json: {
-      subtotal: this.getSubtotal()
-    }
-  }, function(error, response, body) {
-    if (!error && response.statusCode === 200) {
-      done(body.tax);
-    }
-  });
+// src/part2/tax.js
+var request = require('request');
+module.exports = {
+  calculate: function(subtotal, state, done) {
+    request.post({
+      url: 'https://some-tax-service.com/request',
+      method: 'POST',
+      json: {}
+    }, function(error, response, body) {
+      done(body);
+    });
+  }
 };
 ```
 
-Here `getTax` uses the `request` library to make a POST request to the tax API with a JSON payload containing the subtotal. When the request completes, the callback function passed to `getTax`, called `done`, will execute with the `tax` property in the JSON response.
-
-### Stubbing with Sinon
-
-Let's say we now want to break out our tax calculation into its own module so that it can be used in other parts of our system. We could simply move the code from `getTax` into its own `tax` module with its own test and call it from `getTax`.
+We've written the minimal amount of code to get our test to pass. One issue with this though is that we don't need to pass the subtotal in the request. Let's write another test to verify this:
 
 ```js
-// src/tax.js
+// tests/part2/tax-test.js
+it('calculate() should send the subtotal in the request', function(done) {
+  nock('https://some-tax-service.com')
+    .post('/request')
+    .reply(200, function(uri, requestBody) {
+      return {
+        amount: JSON.parse(requestBody).subtotal * 0.10
+      };
+    });
 
+  tax.calculate(100, 'CA', function(taxDetails) {
+    expect(taxDetails).to.eql({ amount: 10 });
+    done();
+  });
+});
+```
+
+Here we've written a test where instead of returning a static `amount` property, we are reading the subtotal from the request and calculating 10% tax from that. We are assuming CA has a 10% tax rate in our test. Now, our test fails until we send over the subtotal:
+
+```js
+// src/part2/tax.js
 var request = require('request');
 
 module.exports = {
-  calculate: function(subtotal, done) {
+  calculate: function(subtotal, state, done) {
+    request.post({
+      url: 'https://some-tax-service.com/request',
+      method: 'POST',
+      json: {
+        subtotal: subtotal // added the subtotal in the request payload
+      }
+    }, function(error, response, body) {
+      done(body);
+    });
+  }
+};
+```
+
+Our test passes! Now your client comes to you and says to only call the tax API if the state is CA.  Otherwise, don't charge any tax. Our previous tests already handle the case when the state is CA. Let's write a test to handle when the state is not CA.
+
+```js
+// tests/part2/tax-test.js
+it('calculate() should not make a request if the state is not CA', function(done) {
+  nock('https://some-tax-service.com')
+    .post('/request')
+    .reply(200, function(uri, requestBody) {
+      return {
+        amount: JSON.parse(requestBody).subtotal * 0.10
+      };
+    });
+
+  tax.calculate(100, 'NY', function(taxDetails) {
+    expect(taxDetails).to.eql({ amount: 0 });
+    done();
+  });
+});
+```
+
+Our test fails. The implementation for this test to pass is:
+
+```js
+// src/part2/tax.js
+module.exports = {
+  calculate: function(subtotal, state, done) {
+    if (state !== 'CA') {
+      done({ amount: 0 });
+    }
+
     request.post({
       url: 'https://some-tax-service.com/request',
       method: 'POST',
@@ -96,106 +140,14 @@ module.exports = {
         subtotal: subtotal
       }
     }, function(error, response, body) {
-      if (!error && response.statusCode === 200) {
-        done(body);
-      }
+      done(body);
     });
   }
 };
 ```
 
-Here is the test for the new `tax` module.
-
-```js
-// tests/tax-test.js
-
-describe('tax', function() {
-  it('calculate() should execute the callback function with the tax amount', function(done) {
-    nock('https://some-tax-service.com')
-      .post('/request')
-      .reply(200, function(uri, requestBody) {
-        return {
-          tax: JSON.parse(requestBody).subtotal * 0.10
-        };
-      });
-
-    tax.calculate(100, function(taxInfo) {
-      expect(taxInfo).to.eql({
-        tax: 10
-      });
-      done();
-    });
-  });
-});
-```
-
-Notice that in this test I am using `eql` instead of `equal`. `equal` asserts that the target is strictly equal (using ===) to the value whereas `eql` performs a deep comparison between the target and the value.
-
-Here is our revised `getTax()` method:
-
-```js
-CartSummary.prototype.getTax = function(done) {
-  tax.calculate(this.getSubtotal(), function(taxInfo) {
-    done(taxInfo.tax);
-  });
-};
-```
-
-All tests should be passing. However, the test for `getTax` knows about the implementation of `tax.calculate` because it is using Nock to intercept the HTTP request made to the tax API service. If the implementation of `tax.calculate` changed, such as a different tax API service was used, our test for `getTax` would also need to change. Instead, a better approach would be to fake out `tax.calculate` when testing `getTax` using a stub, a controllable replacement. We can create this stub using the Sinon library.
-
-To install Sinon, run:
-
-```
-npm install sinon --save-dev
-```
-
-Let's revise the `getTax` test to use a Sinon stub instead of Nock.
-
-```js
-// tests/cart-summary-2-test.js
-
-describe('getTax()', function() {
-  beforeEach(function() {
-    sinon.stub(tax, 'calculate', function(subtotal, done) {
-      done({
-        tax: 30
-      });
-    });
-  });
-
-  afterEach(function() {
-    tax.calculate.restore();
-  });
-
-  it('get Tax() should execute the callback function with the tax amount', function(done) {
-    var cartSummary = new CartSummary([{
-      id: 1,
-      quantity: 4,
-      price: 50
-    }, {
-      id: 2,
-      quantity: 2,
-      price: 30
-    }, {
-      id: 3,
-      quantity: 1,
-      price: 40
-    }]);
-
-    cartSummary.getTax(function(tax) {
-      expect(tax).to.equal(30);
-      done();
-    });
-  });
-});
-```
-
-In this example, we are stubbing out `tax.calculate` with a pre-programmed replacement function that simply executes the callback with a static tax. This happens in a `beforeEach` block which executes before every test. After each test, the `afterEach` block is excuted which restores the original `tax.calculate`. By writing our test for the refactored `getTax` method using a stub instead of Nock, the test never has to change if the underlying implementation of `tax.calculate` changes. Note that the public interface of `tax.calculate` needs to be kept the same.
-
-Sinon is a very powerful library and offers a lot more than just stubs including spies, mocks, fake servers, and plenty more.
-
 ### Conclusion
 
-In this post, we looked at a few practical examples of unit testing in Node using the Mocha testing framework, the Chai assertion library, Nock for HTTP mocking, and Sinon for stubbing. I hope you enjoyed this post. If you have any questions, ask them below or reach me on Twitter [@skaterdav85](https://twitter.com/skaterdav85).
+In this post, we looked at how to test modules that make HTTP requests in isolation using a library called Nock. I hope you enjoyed this post. If you have any questions, ask them below or reach me on Twitter [@skaterdav85](https://twitter.com/skaterdav85).
 
 [Source code](https://github.com/skaterdav85/node-testing)
