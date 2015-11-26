@@ -87,7 +87,7 @@ it('calculate() should send the subtotal in the request', function(done) {
 });
 ```
 
-Here we have written a test where instead of specifying a static JSON response, we have specified a function to execute that reads the subtotal from the request and calculates a 10% tax. We are assuming CA has a 10% tax rate in our test. Now, our test fails until we send over the subtotal:
+Here we have written a test where instead of specifying a static JSON response, we have specified a function to execute that reads the subtotal from the request and calculates a 10% tax. This function is called with an argument `uri` containing the value `/request` and `requestBody`, which is a JSON string containing the request data. We are assuming CA has a 10% tax rate in our test. Now, our test fails until we send over the subtotal.
 
 ```js
 // src/part2/tax.js
