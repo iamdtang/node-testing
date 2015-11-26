@@ -122,7 +122,7 @@ it('calculate() should not make a request if the state is not CA', function(done
 });
 ```
 
-Our test fails. The implementation for this test to pass is:
+Our test fails. The implementation for this test to pass becomes:
 
 ```js
 // src/part2/tax.js
@@ -147,6 +147,6 @@ module.exports = {
 
 ### Conclusion
 
-In this post, we looked at how to test modules that make HTTP requests in isolation using a library called Nock. I hope you enjoyed this post. If you have any questions, ask them below or reach me on Twitter [@skaterdav85](https://twitter.com/skaterdav85).
+In this post, we looked at how to test modules that make HTTP requests in isolation using a library called Nock. Behind the scenes, Nock overrides Node's `http.request` function which is used by the `request` module. I hope you enjoyed this post. If you have any questions, ask them below or reach me on Twitter [@skaterdav85](https://twitter.com/skaterdav85).
 
 [Source code](https://github.com/skaterdav85/node-testing)
