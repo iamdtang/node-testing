@@ -43,7 +43,7 @@ Install the `request` module, which is used to make HTTP requests:
 npm install request --save
 ```
 
-Then:
+Then add the following:
 
 ```js
 // src/part2/tax.js
@@ -61,7 +61,7 @@ module.exports = {
 };
 ```
 
-We've written the minimal amount of code to get our test to pass. One issue with this though is that we don't need to pass the subtotal in the request. Let's write another test to verify this:
+We've written the minimal amount of code to get our test to pass. One issue with this though is that we don't need to pass the subtotal in the request for our test to pass. Let's write another test to verify this:
 
 ```js
 // tests/part2/tax-test.js
