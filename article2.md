@@ -22,10 +22,8 @@ var nock = require('nock');
 it('calculate() should resolve with an object containing the tax details', function(done) {
   nock('https://some-tax-service.com')
     .post('/request')
-    .reply(200, function(uri, requestBody) {
-      return {
-        amount: 7
-      };
+    .reply(200, {
+      amount: 7
     });
 
   tax.calculate(500, 'CA', function(taxDetails) {
@@ -35,7 +33,15 @@ it('calculate() should resolve with an object containing the tax details', funct
 });
 ```
 
-When a POST request is made to https://some-tax-service.com/request, Nock will execute our specified function and return the static JSON response. This static response should mimic what the API would really respond with. Our test is failing because we have no implementation yet. Let's do that:
+When a POST request is made to https://some-tax-service.com/request, Nock will return the following static JSON response:
+
+```json
+{
+  "amount": 7
+}
+```
+
+This static response should mimic what the API would really respond with. Our test is failing because we have no implementation yet. Let's do that:
 
 Install the `request` module, which is used to make HTTP requests:
 
@@ -61,7 +67,7 @@ module.exports = {
 };
 ```
 
-We've written the minimal amount of code to get our test to pass. One issue with this though is that we don't need to pass the subtotal in the request for our test to pass. Let's write another test to verify this:
+We've written the minimal amount of code to get our test to pass. One issue with this though is that we don't need to pass the subtotal in the request for our test to pass. Let's see how we can capture that in a test.
 
 ```js
 // tests/part2/tax-test.js
@@ -81,7 +87,7 @@ it('calculate() should send the subtotal in the request', function(done) {
 });
 ```
 
-Here we've written a test where instead of returning a static `amount` property, we are reading the subtotal from the request and calculating 10% tax from that. We are assuming CA has a 10% tax rate in our test. Now, our test fails until we send over the subtotal:
+Here we have written a test where instead of specifying a static JSON response, we have specified a function to execute that reads the subtotal from the request and calculates a 10% tax. We are assuming CA has a 10% tax rate in our test. Now, our test fails until we send over the subtotal:
 
 ```js
 // src/part2/tax.js

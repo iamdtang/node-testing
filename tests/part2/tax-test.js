@@ -7,10 +7,8 @@ describe('tax', function() {
   it('calculate() should resolve with an object containing the tax details', function(done) {
     nock('https://some-tax-service.com')
       .post('/request')
-      .reply(200, function(uri, requestBody) {
-        return {
-          amount: 7
-        };
+      .reply(200, {
+        amount: 7
       });
 
     tax.calculate(500, 'CA', function(taxDetails) {
