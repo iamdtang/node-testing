@@ -3,7 +3,7 @@ var request = require('request');
 module.exports = {
   calculate: function(subtotal, state, done) {
     if (state !== 'CA') {
-      done({ amount: 0 });
+      return done({ amount: 0 });
     }
 
     request.post({
