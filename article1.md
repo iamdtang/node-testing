@@ -124,7 +124,7 @@ Let's say we now want to add tax calculation to `CartSummary` in a `getTax()` me
 
 ```js
 var cartSummary = new CartSummary([ /* ... */ ]);
-cartSummary.getTax(300, 'NY', function() {
+cartSummary.getTax('NY', function() {
   // executed when the tax API request has finished
 });
 ```
