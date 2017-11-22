@@ -51,7 +51,7 @@ describe('CartSummary', function() {
 
 The `describe` function is used to set up a group of tests with a name. I tend to put the module under test as the name, in this case `CartSummary`. A test is written using the `it` function. The `it` function is given a description as the first argument of what the module under test should do. The second argument of the `it` function is a function that will contain one or more assertions (also called expectations) using Chai in this example. Our first test simply verifies that the subtotal is 0 if the cart has no items.
 
-To run this test, run `mocha tests --recursive --watch` from the root of the project. The recursive flag will find all files in subdirectories, and the watch flag will watch all your source and test files and rerun the tests when they change. You should see something like this:
+To run this test, run `mocha tests --recursive --expose-internals` from the root of the project. The recursive flag will find all files in subdirectories, and the watch flag will watch all your source and test files and rerun the tests when they change. You should see something like this:
 
 ![failing-test-1.png](failing-test-1.png)
 
