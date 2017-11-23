@@ -6,7 +6,7 @@ var tax = require('./../../src/part1/tax');
 
 describe('CartSummary', function() {
 	beforeEach(function() {
-		sinon.stub(tax, 'calculate', function(subtotal, state, done) {
+		sinon.stub(tax, 'calculate').callsFake(function(subtotal, state, done) {
 			setTimeout(function() {
 				done({
 					amount: 30
