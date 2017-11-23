@@ -156,9 +156,10 @@ Now that `tax.calculate` has been created, we can stub it out with our pre-progr
 var sinon = require('sinon');
 var tax = require('./../../src/part1/tax');
 
+
 describe('getTax()', function() {
   beforeEach(function() {
-    sinon.stub(tax, 'calculate', function(subtotal, state, done) {
+    sinon.stub(tax, 'calculate').callsFake(function(subtotal, state, done) {
       setTimeout(function() {
         done({
           amount: 30
